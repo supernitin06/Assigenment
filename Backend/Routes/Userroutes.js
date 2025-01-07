@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { body } = require('express-validator');
-const { signupuser  ,loginuser ,userlogout ,allusers} = require('../Controller/usercontrol');
+const { signupuser  ,loginuser ,userlogout ,allusers, AllFriendsReq ,removeFriendRequest} = require('../Controller/usercontrol');
 const authMiddleware = require('../middleware/userauth');
 
 
@@ -36,6 +36,9 @@ router.post(
 
 router.get('/logout', authMiddleware.authUser, userlogout)
 router.get('/all', authMiddleware.authUser, allusers);
+router.get('/allrequestuser', authMiddleware.authUser, AllFriendsReq );
+router.post('/deletefriendrequest', authMiddleware.authUser, removeFriendRequest);
+
 
 
 

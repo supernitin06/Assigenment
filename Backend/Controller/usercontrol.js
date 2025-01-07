@@ -101,6 +101,64 @@ const userlogout = async (req, res) => {
 };
 
 
+const AllFriendsReq = async (req, res, next) => {
+    try {
+        // Find the user and populate the friendRequestsSent field with only name and _id
+        const user = await users.findById(req.user._id)
+            .populate({
+                path: 'friendRequestsSent',
+                select: 'name _id' // Specify the fields to include
+            });
+
+        // Format the response to return only friendRequestsSent
+        const friendRequestsSent = user.friendRequestsSent.map(friend => ({
+            name: friend.name,
+            _id: friend._id
+        }));
+
+        return res.status(200).json({ type: 'success', friendRequestsSent });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ type: 'error', error: error.message });
+    }
+};
+
+const removeFriendRequest = async (req, res) => {
+    try {
+        const { friendId } = req.body; // Friend ID to be removed
+
+        if (!friendId) {
+            return res.status(400).json({ type: 'error', message: 'Friend ID is required' });
+        }
+
+        // Find the user and update the friendRequestsSent field
+        const user = await users.findByIdAndUpdate(
+            req.user._id, // Current user's ID from the middleware
+            { $pull: { friendRequestsSent: friendId } }, // Remove the friendId
+            { new: true } // Return the updated document
+        ).populate({
+            path: 'friendRequestsSent',
+            select: 'name _id' // Optional: Include only name and _id
+        });
+
+        if (!user) {
+            return res.status(404).json({ type: 'error', message: 'User not found' });
+        }
+
+        return res.status(200).json({
+            type: 'success',
+            message: 'Friend request removed successfully',
+            friendRequestsSent: user.friendRequestsSent, // Updated list
+        });
+    } catch (error) {
+        console.error('Error in removeFriendRequest:', error);
+        return res.status(500).json({ type: 'error', message: error.message });
+    }
+};
 
 
-module.exports = { signupuser, loginuser, userlogout, allusers };
+
+
+
+
+module.exports = { signupuser, loginuser, userlogout, allusers , AllFriendsReq ,removeFriendRequest};

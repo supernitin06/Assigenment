@@ -26,6 +26,7 @@ function Userlogin() {
         dispatch(adduser(data.user));
         localStorage.setItem('token', data.token);
         localStorage.setItem('id', data.user.id);
+        
         console.log(data.user);
         console.log(data.user.id);
         

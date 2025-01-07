@@ -9,7 +9,7 @@ import { Provider } from 'react-redux';
 import Home from './Pages/Home.jsx';
 import Userlogout from './Pages/Userlogout.jsx';
 import Userprotected from './Pages/Userprotected.jsx';
-import FriendRecommendations from './Pages/FriendRecommendations.jsx';
+
 
 const router = createBrowserRouter([
   {
@@ -31,13 +31,7 @@ const router = createBrowserRouter([
     path: '/userlogout',
     element: <Userlogout/>,
   },
-  {
-    path: '/recommendations',
-    element:
-    <Userprotected>
-    <FriendRecommendations/>
-    </Userprotected>
-  },
+  
 ]);
 
 createRoot(document.getElementById('root')).render(

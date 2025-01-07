@@ -1,32 +1,20 @@
+// Import necessary dependencies
 import { createSlice, nanoid } from "@reduxjs/toolkit";
 
+// Initial state for the Redux slice
 const initialState = {
-  users: [
-    {
-      id: "",
-      name: "",
-      email: "",
-    },
-  ],
-  friends: [
-    {
-      name: "John",
-      id: "1",
-    },
-  ],
-  friendRequests: [], // Track friend requests separately
-  sentRequests: [],   // Track sent friend requests
-
-
-
-
-  friendRecommendations: [], // Add this line to initialState
+  users: [], // List of all users
+  friends: [], // List of friends
+  friendRequests: [], // Friend requests received
+  sentRequests: [], // Friend requests sent
 };
 
+// Create a Redux slice
 export const userslice = createSlice({
   name: "user",
   initialState,
   reducers: {
+    // Add a new user to the users list
     adduser: (state, action) => {
       const user = {
         id: action.payload.id,
@@ -35,73 +23,62 @@ export const userslice = createSlice({
       };
       state.users.push(user);
     },
-    addfriend: (state, action) => {
+
+    // Add a new friend to the friends list
+    addFriend: (state, action) => {
       const friend = {
         id: action.payload.id,
         name: action.payload.name,
       };
       state.friends.push(friend);
     },
-    removefriend: (state, action) => {
+
+    // Remove a friend from the friends list
+    removeFriend: (state, action) => {
       state.friends = state.friends.filter(
         (friend) => friend.id !== action.payload
       );
     },
+
+    // Send a friend request
     sendFriendRequest: (state, action) => {
       const request = {
         id: nanoid(),
         fromId: action.payload.fromId,
         toId: action.payload.toId,
-        status: "pending", // Track request status
+        status: "pending",
       };
       state.sentRequests.push(request);
     },
-    acceptFriendRequest: (state, action) => {
-      const request = state.friendRequests.find(
-        (req) => req.id === action.payload.id
-      );
-      if (request) {
-        request.status = "accepted";
-        state.friends.push({
-          id: request.fromId,
-          name: request.fromName, // Corrected to use the `fromName` from request
-        });
-        // Remove from friendRequests
-        state.friendRequests = state.friendRequests.filter(
-          (req) => req.id !== action.payload.id
-        );
-      }
+
+    // Store sent friend requests fetched from the backend
+    storeSentRequests: (state, action) => {
+      state.sentRequests = action.payload;
     },
-    rejectFriendRequest: (state, action) => {
-      state.friendRequests = state.friendRequests.filter(
-        (request) => request.id !== action.payload
-      );
+
+    // Store received friend requests fetched from the backend
+    storeFriendRequests: (state, action) => {
+      state.friendRequests = action.payload;
     },
-    addFriendRequestReceived: (state, action) => {
-      const friendRequest = {
-        id: nanoid(),
-        fromId: action.payload.fromId,
-        fromName: action.payload.fromName,
-        toId: action.payload.toId,
-        status: "pending",
-      };
-      state.friendRequests.push(friendRequest);
-    },
-    setFriendRecommendations: (state, action) => {
-      state.friendRecommendations = action.payload;
+
+    // Clear all friend requests (used when cleaning up state, e.g., on logout)
+    clearFriendRequests: (state) => {
+      state.friendRequests = [];
+      state.sentRequests = [];
     },
   },
 });
 
+// Export actions for use in components
 export const {
   adduser,
-  addfriend,
-  removefriend,
+  addFriend,
+  removeFriend,
   sendFriendRequest,
-  acceptFriendRequest,
-  rejectFriendRequest,
-  addFriendRequestReceived,
-  setFriendRecommendations,
+  storeSentRequests,
+  storeFriendRequests,
+  clearFriendRequests,
 } = userslice.actions;
 
+// Export the reducer to be used in the Redux store
 export default userslice.reducer;

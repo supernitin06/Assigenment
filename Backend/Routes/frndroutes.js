@@ -5,6 +5,7 @@ const router = express.Router()
 
 
 router.post('/add', authMiddleware.authUser , FriendController.addFriendReq)
+router.post('/allsendreq', authMiddleware.authUser , FriendController.myAllFriendsReq)
 
 
 
